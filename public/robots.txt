@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pdf-editor.example.com/sitemap.xml
+Sitemap: https://mypdfsigner.netlify.app/sitemap.xml

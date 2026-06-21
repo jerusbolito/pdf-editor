@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { getStoredConsent } from '../utils/consent';
 
-const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX'; // Replace with your Google Analytics 4 Measurement ID
+const GA_MEASUREMENT_ID = 'G-PKH81BV7LX';
 
 export function Analytics() {
   useEffect(() => {
