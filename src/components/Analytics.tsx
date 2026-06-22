@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { getStoredConsent } from '../utils/consent';
 
-const GA_MEASUREMENT_ID = 'G-PKH81BV7LX';
+const GA_MEASUREMENT_ID = 'G-D12Q5PL12F';
 
 export function Analytics() {
   useEffect(() => {
