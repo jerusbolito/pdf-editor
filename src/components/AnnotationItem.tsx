@@ -130,7 +130,9 @@ export function AnnotationItem({
     onShowMenu(e.clientX, e.clientY);
   };
 
-  const handleResizeDown = (handle: ResizeHandle) => (e: React.PointerEvent) => {
+  const handleResizeDown = (e: React.PointerEvent) => {
+    const handle = (e.currentTarget as HTMLElement).dataset.handle as ResizeHandle | undefined;
+    if (!handle) return;
     e.preventDefault();
     e.stopPropagation();
     onSelect();
@@ -179,10 +181,10 @@ export function AnnotationItem({
       />
       {isSelected && isResizable && (
         <>
-          <ResizeHandleDot position="nw" onPointerDown={handleResizeDown('nw')} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} />
-          <ResizeHandleDot position="ne" onPointerDown={handleResizeDown('ne')} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} />
-          <ResizeHandleDot position="sw" onPointerDown={handleResizeDown('sw')} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} />
-          <ResizeHandleDot position="se" onPointerDown={handleResizeDown('se')} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} />
+          <ResizeHandleDot position="nw" onPointerDown={handleResizeDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} />
+          <ResizeHandleDot position="ne" onPointerDown={handleResizeDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} />
+          <ResizeHandleDot position="sw" onPointerDown={handleResizeDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} />
+          <ResizeHandleDot position="se" onPointerDown={handleResizeDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} />
         </>
       )}
     </div>
@@ -214,5 +216,5 @@ function ResizeHandleDot({
   if (position.includes('w')) style.left = -5;
   else style.right = -5;
   const cursor = `${position}-resize`;
-  return <div style={{ ...style, cursor }} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} />;
+  return <div data-handle={position} style={{ ...style, cursor }} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} />;
 }

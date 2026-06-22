@@ -1,1 +1,4 @@
 https://mypdfsigner.netlify.app/* https://mypdfsigner.net/:splat 301!
+
+# SPA fallback for react-router BrowserRouter
+/* /index.html 200

@@ -34,93 +34,141 @@ export function Toolbar({
   onScaleChange,
 }: ToolbarProps) {
   return (
-    <div className="flex w-full flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
-      <div className="flex items-center gap-3">
-        {onBackToHome && (
+    <>
+      <div className="flex w-full flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-3">
+          {onBackToHome && (
+            <button
+              onClick={onBackToHome}
+              className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+              title="Back to tools"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Back</span>
+            </button>
+          )}
           <button
-            onClick={onBackToHome}
-            className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
-            title="Back to tools"
+            onClick={onUpload}
+            className="flex items-center gap-1.5 rounded bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            title="Open PDF (Ctrl+O)"
           >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Back</span>
+            <FileUp className="h-4 w-4" />
+            <span className="hidden sm:inline">Open PDF</span>
           </button>
-        )}
-        <button
-          onClick={onUpload}
-          className="flex items-center gap-1.5 rounded bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          title="Open PDF (Ctrl+O)"
-        >
-          <FileUp className="h-4 w-4" />
-          <span className="hidden sm:inline">Open PDF</span>
-        </button>
-        {fileName && (
-          <div className="hidden items-center gap-2 text-sm text-gray-600 md:flex">
-            <FileText className="h-4 w-4" />
-            <span className="max-w-[200px] truncate font-medium">{fileName}</span>
-            <span className="text-gray-400">{pageCount} page{pageCount !== 1 ? 's' : ''}</span>
-          </div>
-        )}
+          {fileName && (
+            <div className="hidden items-center gap-2 text-sm text-gray-600 md:flex">
+              <FileText className="h-4 w-4" />
+              <span className="max-w-[200px] truncate font-medium">{fileName}</span>
+              <span className="text-gray-400">{pageCount} page{pageCount !== 1 ? 's' : ''}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onScaleChange(Math.max(0.5, scale - 0.25))}
+            className="rounded p-2 text-gray-600 hover:bg-gray-100"
+            title="Zoom out"
+          >
+            <ZoomOut className="h-4 w-4" />
+          </button>
+          <span className="w-12 text-center text-sm font-medium text-gray-700">{Math.round(scale * 100)}%</span>
+          <button
+            onClick={() => onScaleChange(Math.min(3, scale + 0.25))}
+            className="rounded p-2 text-gray-600 hover:bg-gray-100"
+            title="Zoom in"
+          >
+            <ZoomIn className="h-4 w-4" />
+          </button>
+          <div className="mx-1 h-6 w-px bg-gray-200" />
+          <button
+            onClick={onUndo}
+            disabled={!canUndo}
+            className="rounded p-2 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+            title="Undo (Ctrl+Z)"
+          >
+            <Undo2 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={onRedo}
+            disabled={!canRedo}
+            className="rounded p-2 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+            title="Redo (Ctrl+Y)"
+          >
+            <Redo2 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={onDelete}
+            disabled={!hasSelection}
+            className="rounded p-2 text-red-600 hover:bg-red-50 disabled:opacity-40"
+            title="Delete selected (Delete)"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={onShowHelp}
+            className="rounded p-2 text-gray-600 hover:bg-gray-100"
+            title="Help"
+          >
+            <HelpCircle className="h-4 w-4" />
+          </button>
+          <div className="mx-1 h-6 w-px bg-gray-200" />
+          <button
+            onClick={onDownload}
+            className="flex items-center gap-1.5 rounded bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700"
+            title="Download signed PDF"
+          >
+            <Download className="h-4 w-4" />
+            <span className="hidden sm:inline">Download</span>
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Mobile bottom toolbar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-gray-200 bg-white px-2 py-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] sm:hidden">
         <button
-          onClick={() => onScaleChange(Math.max(0.5, scale - 0.25))}
-          className="rounded p-2 text-gray-600 hover:bg-gray-100"
-          title="Zoom out"
+          onClick={onUpload}
+          className="flex flex-col items-center gap-0.5 rounded p-2 text-gray-600 active:bg-gray-100"
+          title="Open PDF"
         >
-          <ZoomOut className="h-4 w-4" />
+          <FileUp className="h-5 w-5" />
+          <span className="text-[10px]">Open</span>
         </button>
-        <span className="w-12 text-center text-sm font-medium text-gray-700">{Math.round(scale * 100)}%</span>
-        <button
-          onClick={() => onScaleChange(Math.min(3, scale + 0.25))}
-          className="rounded p-2 text-gray-600 hover:bg-gray-100"
-          title="Zoom in"
-        >
-          <ZoomIn className="h-4 w-4" />
-        </button>
-        <div className="mx-1 h-6 w-px bg-gray-200" />
         <button
           onClick={onUndo}
           disabled={!canUndo}
-          className="rounded p-2 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
-          title="Undo (Ctrl+Z)"
+          className="flex flex-col items-center gap-0.5 rounded p-2 text-gray-600 active:bg-gray-100 disabled:opacity-40"
+          title="Undo"
         >
-          <Undo2 className="h-4 w-4" />
-        </button>
-        <button
-          onClick={onRedo}
-          disabled={!canRedo}
-          className="rounded p-2 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
-          title="Redo (Ctrl+Y)"
-        >
-          <Redo2 className="h-4 w-4" />
+          <Undo2 className="h-5 w-5" />
+          <span className="text-[10px]">Undo</span>
         </button>
         <button
           onClick={onDelete}
           disabled={!hasSelection}
-          className="rounded p-2 text-red-600 hover:bg-red-50 disabled:opacity-40"
-          title="Delete selected (Delete)"
+          className="flex flex-col items-center gap-0.5 rounded p-2 text-red-600 active:bg-red-50 disabled:opacity-40"
+          title="Delete"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-5 w-5" />
+          <span className="text-[10px]">Delete</span>
         </button>
         <button
           onClick={onShowHelp}
-          className="rounded p-2 text-gray-600 hover:bg-gray-100"
+          className="flex flex-col items-center gap-0.5 rounded p-2 text-gray-600 active:bg-gray-100"
           title="Help"
         >
-          <HelpCircle className="h-4 w-4" />
+          <HelpCircle className="h-5 w-5" />
+          <span className="text-[10px]">Help</span>
         </button>
-        <div className="mx-1 h-6 w-px bg-gray-200" />
         <button
           onClick={onDownload}
-          className="flex items-center gap-1.5 rounded bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700"
-          title="Download signed PDF"
+          className="flex flex-col items-center gap-0.5 rounded p-2 text-green-600 active:bg-green-50"
+          title="Download"
         >
-          <Download className="h-4 w-4" />
-          <span className="hidden sm:inline">Download</span>
+          <Download className="h-5 w-5" />
+          <span className="text-[10px]">Download</span>
         </button>
       </div>
-    </div>
+    </>
   );
 }

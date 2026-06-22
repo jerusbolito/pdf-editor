@@ -1,14 +1,7 @@
 import { useState, useCallback } from 'react';
-import * as pdfjs from 'pdfjs-dist';
+import { pdfjs } from '../utils/pdfWorker';
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url';
 import type { PageInfo } from '../types';
-
-console.log('[pdf] worker url:', pdfWorkerUrl);
-const worker = new window.Worker(pdfWorkerUrl, { type: 'module' });
-worker.onerror = (e) => console.error('[pdf] worker error:', e);
-worker.onmessageerror = (e) => console.error('[pdf] worker message error:', e);
-pdfjs.GlobalWorkerOptions.workerPort = worker;
 
 export interface PdfDocumentState {
   pdf: PDFDocumentProxy | null;

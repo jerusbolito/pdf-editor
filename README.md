@@ -1,6 +1,6 @@
 # PDF Editor
 
-A free, client-side, mobile-friendly PDF editor built with React, Vite, PDF.js, and PDF-lib. Everything runs in the browser � no PDFs or data are uploaded to a server.
+A free, client-side, mobile-friendly PDF editor built with React, Vite, PDF.js, and PDF-lib. Everything runs in the browser — no PDFs or data are uploaded to a server.
 
 ## Features
 
@@ -36,7 +36,25 @@ Then open http://localhost:5173.
 npm run build
 `
 
-The dist folder can be deployed to any static host (Netlify, Vercel, GitHub Pages, Cloudflare Pages, etc.).
+The dist folder can be deployed to any static host. Because the app uses `react-router-dom` with `BrowserRouter`, configure your host to serve `index.html` for all routes:
+
+- **Netlify**: `public/_redirects` is included.
+- **Vercel**: `public/vercel.json` is included.
+- **Cloudflare Pages**: enable SPA fallback in the Pages settings.
+- **GitHub Pages**: either enable hash-based routing or configure a `404.html` fallback.
+
+## Pages & SEO
+
+Each tool has a dedicated, SEO-optimized landing page:
+
+- `/` — homepage
+- `/edit-pdf` — PDF editor
+- `/merge-pdf` — merge PDFs
+- `/split-pdf` — split PDFs
+- `/compress-pdf` — compress PDFs
+- `/images-to-pdf` — convert images to PDF
+
+Page titles, descriptions, and canonical URLs are updated at runtime via `src/components/Seo.tsx`. FAQ sections on each page include schema.org `FAQPage` JSON-LD markup.
 
 ## Customization
 

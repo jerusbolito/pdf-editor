@@ -1,9 +1,9 @@
-import { FileText, Merge, Scissors, Minimize2, Image as ImageIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 interface ToolCardProps {
   title: string;
   description: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   onClick: () => void;
   badge?: string;
 }
@@ -29,37 +29,3 @@ export function ToolCard({ title, description, icon, onClick, badge }: ToolCardP
     </button>
   );
 }
-
-export const tools = [
-  {
-    id: 'editor',
-    title: 'PDF Editor',
-    description: 'Sign, fill, edit, and annotate PDFs in your browser.',
-    icon: <FileText className="h-6 w-6" />,
-    badge: 'Popular',
-  },
-  {
-    id: 'merge',
-    title: 'PDF Merge',
-    description: 'Combine multiple PDFs into a single document.',
-    icon: <Merge className="h-6 w-6" />,
-  },
-  {
-    id: 'split',
-    title: 'PDF Split',
-    description: 'Extract pages from a PDF into separate files.',
-    icon: <Scissors className="h-6 w-6" />,
-  },
-  {
-    id: 'compress',
-    title: 'PDF Compress',
-    description: 'Reduce PDF file size while maintaining quality.',
-    icon: <Minimize2 className="h-6 w-6" />,
-  },
-  {
-    id: 'images-to-pdf',
-    title: 'Images to PDF',
-    description: 'Convert images into a single PDF document.',
-    icon: <ImageIcon className="h-6 w-6" />,
-  },
-];

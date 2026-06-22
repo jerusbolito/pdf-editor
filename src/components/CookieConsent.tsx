@@ -1,13 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { getStoredConsent, setStoredConsent, type Consent } from '../utils/consent';
 
 export function CookieConsent() {
-  const [consent, setConsent] = useState<Consent>('pending');
+  const [consent, setConsent] = useState<Consent>(() => getStoredConsent());
   const [showDetails, setShowDetails] = useState(false);
-
-  useEffect(() => {
-    setConsent(getStoredConsent());
-  }, []);
 
   const handleDecision = (value: Consent) => {
     setStoredConsent(value);
