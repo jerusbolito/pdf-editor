@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import type { PDFPageProxy } from 'pdfjs-dist';
 import type { Annotation, PageInfo, Tool } from '../types';
 import { AnnotationLayer } from './AnnotationLayer';
@@ -37,11 +38,13 @@ export function PdfPage({
   onShowAnnotationMenu,
 }: PdfPageProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isRendering, setIsRendering] = useState(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     let cancelled = false;
+    setIsRendering(true);
     const viewport = page.getViewport({ scale });
     canvas.width = viewport.width;
     canvas.height = viewport.height;
@@ -54,6 +57,8 @@ export function PdfPage({
       .then(() => {
         if (cancelled) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } else {
+          setIsRendering(false);
         }
       })
       .catch(() => {
@@ -67,6 +72,11 @@ export function PdfPage({
 
   return (
     <div className="relative mb-4 bg-white shadow-sm">
+      {isRendering && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        </div>
+      )}
       <canvas ref={canvasRef} className="block" />
       <AnnotationLayer
         pageIndex={pageIndex}

@@ -1,5 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { Annotation } from '../types';
+
+const STORAGE_KEY = 'mypdfsigner-annotations';
 
 function generateId() {
   return Math.random().toString(36).slice(2, 10);
@@ -9,6 +11,22 @@ export function useAnnotations() {
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [history, setHistory] = useState<Annotation[][]>([]);
   const [redoStack, setRedoStack] = useState<Annotation[][]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as Annotation[];
+        setAnnotations(parsed);
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(annotations));
+  }, [annotations]);
 
   const pushHistory = useCallback((next: Annotation[]) => {
     setHistory((prev) => [...prev, next]);

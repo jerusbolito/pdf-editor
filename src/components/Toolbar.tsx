@@ -1,4 +1,4 @@
-import { Undo2, Redo2, Download, Trash2, ZoomIn, ZoomOut, FileUp, FileText, HelpCircle } from 'lucide-react';
+import { Undo2, Redo2, Download, Trash2, ZoomIn, ZoomOut, FileUp, FileText, HelpCircle, ArrowLeft } from 'lucide-react';
 
 interface ToolbarProps {
   fileName: string;
@@ -9,6 +9,7 @@ interface ToolbarProps {
   onRedo: () => void;
   onDelete: () => void;
   onShowHelp: () => void;
+  onBackToHome?: () => void;
   canUndo: boolean;
   canRedo: boolean;
   hasSelection: boolean;
@@ -25,6 +26,7 @@ export function Toolbar({
   onRedo,
   onDelete,
   onShowHelp,
+  onBackToHome,
   canUndo,
   canRedo,
   hasSelection,
@@ -34,6 +36,16 @@ export function Toolbar({
   return (
     <div className="flex w-full flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
       <div className="flex items-center gap-3">
+        {onBackToHome && (
+          <button
+            onClick={onBackToHome}
+            className="flex items-center gap-1.5 rounded px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+            title="Back to tools"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Back</span>
+          </button>
+        )}
         <button
           onClick={onUpload}
           className="flex items-center gap-1.5 rounded bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"

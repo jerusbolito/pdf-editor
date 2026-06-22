@@ -11,6 +11,12 @@ import { AnnotationPopup } from './components/AnnotationPopup';
 import { CookieConsent } from './components/CookieConsent';
 import { Analytics } from './components/Analytics';
 import { HelpPanel } from './components/HelpPanel';
+import { Toast } from './components/Toast';
+import { HomePage } from './components/HomePage';
+import { PdfMergeTool } from './components/PdfMergeTool';
+import { PdfSplitTool } from './components/PdfSplitTool';
+import { PdfCompressTool } from './components/PdfCompressTool';
+import { ImagesToPdfTool } from './components/ImagesToPdfTool';
 import { allTools } from './tools/toolRegistry';
 import { createSignatureAnnotation } from './tools/signatureTool';
 import { createImageAnnotation, makeBackgroundTransparent } from './tools/imageTool';
@@ -29,10 +35,18 @@ function App() {
   const [annotationMenu, setAnnotationMenu] = useState<{ id: string; clientX: number; clientY: number } | null>(null);
   const [imagePending, setImagePending] = useState<{ pageIndex: number; x: number; y: number } | null>(null);
   const [showHelp, setShowHelp] = useState(false);
+  const [toast, setToast] = useState<{ message: string } | null>(null);
+  const [currentTool, setCurrentTool] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = () => fileInputRef.current?.click();
+
+  const handleBackToHome = () => {
+    setCurrentTool(null);
+    clear();
+    setSelectedId(null);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -41,6 +55,22 @@ function App() {
     setSelectedId(null);
     loadFile(file);
     e.target.value = '';
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      clear();
+      setSelectedId(null);
+      loadFile(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   const handleSignatureDone = (dataUrl: string) => {
@@ -69,6 +99,7 @@ function App() {
     if (selectedId) {
       deleteAnnotation(selectedId);
       setSelectedId(null);
+      setToast({ message: 'Annotation deleted' });
     }
   };
 
@@ -82,12 +113,15 @@ function App() {
         e.preventDefault();
         if (e.shiftKey) {
           redo();
+          setToast({ message: 'Redone' });
         } else {
           undo();
+          setToast({ message: 'Undone' });
         }
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
         e.preventDefault();
         redo();
+        setToast({ message: 'Redone' });
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
         e.preventDefault();
         handleUpload();
@@ -148,42 +182,65 @@ function App() {
 
   return (
     <div className="flex h-full flex-col">
-      <Toolbar
-        fileName={fileName}
-        pageCount={pages.length}
-        onUpload={handleUpload}
-        onDownload={download}
-        onUndo={undo}
-        onRedo={redo}
-        onDelete={handleDelete}
-        onShowHelp={() => setShowHelp(true)}
-        canUndo={canUndo}
-        canRedo={canRedo}
-        hasSelection={!!selectedId}
-        scale={scale}
-        onScaleChange={setScale}
-      />
+      {currentTool === null ? (
+        <HomePage onSelectTool={(toolId) => setCurrentTool(toolId)} />
+      ) : currentTool === 'merge' ? (
+        <PdfMergeTool onBack={handleBackToHome} />
+      ) : currentTool === 'split' ? (
+        <PdfSplitTool onBack={handleBackToHome} />
+      ) : currentTool === 'compress' ? (
+        <PdfCompressTool onBack={handleBackToHome} />
+      ) : currentTool === 'images-to-pdf' ? (
+        <ImagesToPdfTool onBack={handleBackToHome} />
+      ) : (
+        <>
+          <Toolbar
+            fileName={fileName}
+            pageCount={pages.length}
+            onUpload={handleUpload}
+            onDownload={download}
+            onUndo={undo}
+            onRedo={redo}
+            onDelete={handleDelete}
+            onShowHelp={() => setShowHelp(true)}
+            onBackToHome={handleBackToHome}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            hasSelection={!!selectedId}
+            scale={scale}
+            onScaleChange={setScale}
+          />
 
-      <div className="flex-1 overflow-hidden">
-        {!hasPdf ? (
-          <div className="flex h-full flex-col items-center justify-center gap-6 p-8 text-center">
-            <div className="rounded-2xl bg-blue-50 p-6">
-              <FileUp className="mx-auto h-12 w-12 text-blue-600" />
+          <div className="flex-1 overflow-hidden">
+            {!hasPdf ? (
+          <div
+            className="flex h-full flex-col items-center justify-center gap-8 p-8 text-center"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+          >
+            <div className="rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-50 p-8 shadow-sm">
+              <FileUp className="mx-auto h-16 w-16 text-blue-600" />
             </div>
-            <div>
-              <h1 className="text-3xl font-semibold text-gray-900">PDF Editor</h1>
-              <p className="mt-2 max-w-md text-gray-600">
-                Open a PDF to add signatures, text, dates, checkboxes, and images. All processing happens in your browser.
+            <div className="max-w-lg">
+              <h1 className="text-4xl font-bold text-gray-900">MyPDFSigner</h1>
+              <p className="mt-3 text-lg text-gray-600">
+                Free online PDF editor. Sign, fill, edit, and annotate PDFs in your browser.
               </p>
+              <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm text-gray-500">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1">✓ Signatures</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1">✓ Text & Dates</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1">✓ Images</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1">✓ Privacy-first</span>
+              </div>
             </div>
             <button
               onClick={handleUpload}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-blue-700"
+              className="flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-md hover:bg-blue-700 transition-colors"
             >
-              <FileUp className="h-5 w-5" />
+              <FileUp className="h-6 w-6" />
               Open PDF
             </button>
-            <p className="text-sm text-gray-400">Tip: press Ctrl+O to open a file</p>
+            <p className="text-sm text-gray-400">Drag and drop a PDF here, or press Ctrl+O</p>
             {loading && <p className="text-gray-500">Loading PDF...</p>}
             {error && <p className="text-red-500">{error}</p>}
           </div>
@@ -253,8 +310,11 @@ function App() {
       )}
 
       {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
+      {toast && <Toast message={toast.message} onClose={() => setToast(null)} />}
       <CookieConsent />
       <Analytics />
+        </>
+      )}
     </div>
   );
 }
